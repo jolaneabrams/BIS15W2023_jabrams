@@ -1,7 +1,7 @@
 ---
 title: "Lab 6 Homework"
 author: "Jolane Abrams"
-date: "2023-01-29"
+date: "2023-01-31"
 output:
   html_document: 
     theme: spacelab
@@ -515,30 +515,13 @@ tabyl(country)
 4. Refocus the data only to include country, isscaap_taxonomic_group, asfis_species_name, asfis_species_number, year, catch.
 
 ```r
-select(fisheries_tidy,"country", "isscaap_taxonomic_group", "asfis_species_name", "asfis_species_number", "year", "catch")
-```
-
-```
-## # A tibble: 376,771 × 6
-##    country isscaap_taxonomic_group asfis_species_name asfis_specie…¹  year catch
-##    <fct>   <chr>                   <chr>              <fct>          <dbl> <dbl>
-##  1 Albania Sharks, rays, chimaeras Squatinidae        10903XXXXX      1995    NA
-##  2 Albania Sharks, rays, chimaeras Squatinidae        10903XXXXX      1996    53
-##  3 Albania Sharks, rays, chimaeras Squatinidae        10903XXXXX      1997    20
-##  4 Albania Sharks, rays, chimaeras Squatinidae        10903XXXXX      1998    31
-##  5 Albania Sharks, rays, chimaeras Squatinidae        10903XXXXX      1999    30
-##  6 Albania Sharks, rays, chimaeras Squatinidae        10903XXXXX      2000    30
-##  7 Albania Sharks, rays, chimaeras Squatinidae        10903XXXXX      2001    16
-##  8 Albania Sharks, rays, chimaeras Squatinidae        10903XXXXX      2002    79
-##  9 Albania Sharks, rays, chimaeras Squatinidae        10903XXXXX      2003     1
-## 10 Albania Sharks, rays, chimaeras Squatinidae        10903XXXXX      2004     4
-## # … with 376,761 more rows, and abbreviated variable name ¹​asfis_species_number
+fisheries_tidy_ltd <- select(fisheries_tidy,"country", "isscaap_taxonomic_group", "asfis_species_name", "asfis_species_number", "year", "catch")
 ```
 
 5. Based on the asfis_species_number, how many distinct fish species were caught as part of these data?
 
 ```r
-fisheries %>% 
+fisheries_tidy_ltd %>% 
   summarise(n_species=n_distinct(asfis_species_number))
 ```
 
@@ -546,64 +529,63 @@ fisheries %>%
 ## # A tibble: 1 × 1
 ##   n_species
 ##       <int>
-## 1      1553
+## 1      1551
 ```
 
 6. Which country had the largest overall catch in the year 2000?
 
 
 ```r
-fisheries_tidy %>% 
-  filter(year == 2000) %>% 
-  select("country", "catch", "year") %>% 
-  arrange(-catch)
+fisheries_tidy_ltd %>% 
+  filter(year==2000) %>%
+  group_by(country) %>% 
+  summarize(catch_total=sum(catch, na.rm=T)) %>% 
+  arrange(desc(catch_total))
 ```
 
 ```
-## # A tibble: 8,793 × 3
-##    country                  catch  year
-##    <fct>                    <dbl> <dbl>
-##  1 China                     9068  2000
-##  2 Peru                      5717  2000
-##  3 Russian Federation        5065  2000
-##  4 Viet Nam                  4945  2000
-##  5 Chile                     4299  2000
-##  6 China                     3288  2000
-##  7 China                     2782  2000
-##  8 United States of America  2438  2000
-##  9 China                     1234  2000
-## 10 Philippines                999  2000
-## # … with 8,783 more rows
+## # A tibble: 193 × 2
+##    country                  catch_total
+##    <fct>                          <dbl>
+##  1 China                          25899
+##  2 Russian Federation             12181
+##  3 United States of America       11762
+##  4 Japan                           8510
+##  5 Indonesia                       8341
+##  6 Peru                            7443
+##  7 Chile                           6906
+##  8 India                           6351
+##  9 Thailand                        6243
+## 10 Korea, Republic of              6124
+## # … with 183 more rows
 ```
 China had the biggest overall catch in 2000.
 
 7. Which country caught the most sardines (_Sardina pilchardus_) between the years 1990-2000?
 
 ```r
-fisheries_tidy %>% 
+fisheries_tidy_ltd %>% 
   filter(between(year,1990, 2000) & asfis_species_name =="Sardina pilchardus") %>% 
-  group_by(country) %>% 
-  select(country, year, catch) %>% 
-  mutate(total_catch=sum(catch)) %>%
-  arrange(desc(total_catch)) 
+ group_by(country) %>% 
+  summarize(catch_total=sum(catch, na.rm=T)) %>% 
+  arrange(desc(catch_total))
 ```
 
 ```
-## # A tibble: 336 × 4
-## # Groups:   country [37]
-##    country  year catch total_catch
-##    <fct>   <dbl> <dbl>       <dbl>
-##  1 Morocco  1990   845        7470
-##  2 Morocco  1991   827        7470
-##  3 Morocco  1992   352        7470
-##  4 Morocco  1993   710        7470
-##  5 Morocco  1994   947        7470
-##  6 Morocco  1995   152        7470
-##  7 Morocco  1996   925        7470
-##  8 Morocco  1997   496        7470
-##  9 Morocco  1998   723        7470
-## 10 Morocco  1999   171        7470
-## # … with 326 more rows
+## # A tibble: 37 × 2
+##    country               catch_total
+##    <fct>                       <dbl>
+##  1 Morocco                      7470
+##  2 Spain                        3507
+##  3 Russian Federation           1639
+##  4 Ukraine                      1030
+##  5 France                        966
+##  6 Portugal                      818
+##  7 Greece                        528
+##  8 Italy                         507
+##  9 Serbia and Montenegro         478
+## 10 Denmark                       477
+## # … with 27 more rows
 ```
 Morocco caught the most sardines between 1990-2000.
 
@@ -614,95 +596,94 @@ Morocco caught the most sardines between 1990-2000.
 fisheries_tidy %>% 
   filter(between(year,2008, 2012) & common_name =="Cephalopods nei") %>%
   group_by(country) %>% 
-  select(country, year, catch) %>% 
-  mutate(total_catch=sum(catch)) %>%
-  arrange(desc(total_catch)) 
+  summarize(catch_total=sum(catch, na.rm=T)) %>% 
+  arrange(desc(catch_total))
 ```
 
 ```
-## # A tibble: 80 × 4
-## # Groups:   country [16]
-##    country  year catch total_catch
-##    <fct>   <dbl> <dbl>       <dbl>
-##  1 India    2008    13         570
-##  2 India    2009    61         570
-##  3 India    2010    93         570
-##  4 India    2011    35         570
-##  5 India    2012    88         570
-##  6 India    2008     8         570
-##  7 India    2009    62         570
-##  8 India    2010    60         570
-##  9 India    2011    94         570
-## 10 India    2012    56         570
-## # … with 70 more rows
+## # A tibble: 16 × 2
+##    country                  catch_total
+##    <fct>                          <dbl>
+##  1 India                            570
+##  2 China                            257
+##  3 Spain                            198
+##  4 Algeria                          162
+##  5 France                           101
+##  6 Mauritania                        90
+##  7 TimorLeste                        76
+##  8 Italy                             66
+##  9 Mozambique                        16
+## 10 Cambodia                          15
+## 11 Taiwan Province of China          13
+## 12 Madagascar                        11
+## 13 Croatia                            7
+## 14 Israel                             0
+## 15 Somalia                            0
+## 16 Viet Nam                           0
 ```
-India caught the most cephalopods between 2008-2012, with 570 metric tonnes, followed by China with 257, Algeria with 162, France with 101, and TimorLeste with 76.
-
 
 9. Which species had the highest catch total between 2008-2012? (hint: Osteichthyes is not a species)
 
 
 ```r
-fisheries_tidy %>% 
+fisheries_tidy_ltd %>% 
   filter(between(year,2008, 2012)) %>%
   group_by(asfis_species_name) %>% 
-  select(asfis_species_name, year, catch) %>% 
-  mutate(total_catch=sum(catch)) %>%
-  arrange(desc(total_catch)) 
+  summarize(catch_total=sum(catch, na.rm=T)) %>% 
+  arrange(desc(catch_total))
 ```
 
 ```
-## # A tibble: 51,014 × 4
-## # Groups:   asfis_species_name [1,472]
-##    asfis_species_name     year catch total_catch
-##    <chr>                 <dbl> <dbl>       <dbl>
-##  1 Theragra chalcogramma  2008     2       41075
-##  2 Theragra chalcogramma  2009     2       41075
-##  3 Theragra chalcogramma  2010     6       41075
-##  4 Theragra chalcogramma  2011     9       41075
-##  5 Theragra chalcogramma  2012     1       41075
-##  6 Theragra chalcogramma  2008    38       41075
-##  7 Theragra chalcogramma  2009   261       41075
-##  8 Theragra chalcogramma  2010   166       41075
-##  9 Theragra chalcogramma  2011   920       41075
-## 10 Theragra chalcogramma  2012   823       41075
-## # … with 51,004 more rows
+## # A tibble: 1,472 × 2
+##    asfis_species_name    catch_total
+##    <chr>                       <dbl>
+##  1 Osteichthyes               107808
+##  2 Theragra chalcogramma       41075
+##  3 Engraulis ringens           35523
+##  4 Katsuwonus pelamis          32153
+##  5 Trichiurus lepturus         30400
+##  6 Clupea harengus             28527
+##  7 Thunnus albacares           20119
+##  8 Scomber japonicus           14723
+##  9 Gadus morhua                13253
+## 10 Thunnus alalunga            12019
+## # … with 1,462 more rows
 ```
 Theragra chalcogramma had the highest total catch between 2008-2012: 41075 metric tonnes. 
 
 10. Use the data to do at least one analysis of your choice.
 
-Which countries caught the most shrimp and lobsters between 1970-2000?
+Which countries caught the most shrimp, lobsters, squid, octopus, cuttlefish, and other molluscs between 1970-2000?
 
 
 ```r
-fisheries_tidy %>% 
-  filter(between(year,1970, 2000) & (isscaap_taxonomic_group  =="Shrimps, prawns"|isscaap_taxonomic_group =="Lobsters, spinyrock lobsters")) %>%
+fisheries_tidy_ltd %>% 
+  filter(between(year,1970, 2000) & 
+           (isscaap_taxonomic_group  =="Shrimps, prawns"
+            |isscaap_taxonomic_group =="Lobsters, spinyrock lobsters"
+            |isscaap_taxonomic_group == "Miscellaneous marine molluscs"
+            |isscaap_taxonomic_group == "Squids, cuttlefishes, octopuses")) %>%
     group_by(country) %>% 
-    select(country, year, catch) %>% 
-    mutate(total_catch=sum(catch)) %>%
-    arrange(desc(total_catch)) 
+  summarize(catch_total=sum(catch, na.rm=T)) %>% 
+  arrange(desc(catch_total))
 ```
 
 ```
-## # A tibble: 12,487 × 4
-## # Groups:   country [157]
-##    country  year catch total_catch
-##    <fct>   <dbl> <dbl>       <dbl>
-##  1 India    1988    91       18087
-##  2 India    1989    13       18087
-##  3 India    1990    73       18087
-##  4 India    1991    10       18087
-##  5 India    1992    67       18087
-##  6 India    1993    11       18087
-##  7 India    1994    59       18087
-##  8 India    1995    61       18087
-##  9 India    1996    51       18087
-## 10 India    1997    89       18087
-## # … with 12,477 more rows
+## # A tibble: 172 × 2
+##    country                  catch_total
+##    <fct>                          <dbl>
+##  1 China                          45957
+##  2 Japan                          41911
+##  3 Korea, Republic of             22258
+##  4 India                          20044
+##  5 Taiwan Province of China       13747
+##  6 United States of America       13652
+##  7 Thailand                       12680
+##  8 Spain                          12236
+##  9 Indonesia                       8861
+## 10 France                          8372
+## # … with 162 more rows
 ```
-India was far and away the leader, with 18087 metric tonnes, followed at a distance by Iceland (1078 tonnes), Ukraine (151 tonnes), and St. Kitts (136 tonnes). 
-
 
 
 ## Push your final code to GitHub!
