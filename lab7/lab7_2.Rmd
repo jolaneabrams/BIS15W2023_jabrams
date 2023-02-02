@@ -149,7 +149,9 @@ msleep %>%
 
 `miss_var_summary` provides a nice, clean summary of NA's across the data frame.
 ```{r}
-naniar::miss_var_summary(amniota_tidy)
+amniota_tidy %>% 
+  miss_var_summary()
+
 ```
 
 ## Practice
@@ -163,8 +165,8 @@ life_history <- read_csv("data/mammal_lifehistories_v2.csv")
 
 1. Do you see any NA's? Try using naniar.
 ```{r}
-life_history %>% 
-  naniar::miss_var_summary()
+life_history %>%  
+  miss_var_summary()
 ```
 
 2. Does this result seem likely? How are NA's represented in the data?
