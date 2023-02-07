@@ -114,7 +114,7 @@ amnio_tidy %>%
   summarize(number_nas = sum(is.na(egg_mass_g)))
   
 ```
-I'd expect egg mass to be all NAs in mammals, since they're viviparous, with bird eggs being easiest to find and weigh, followed by reptile eggs, which is reflected in these summaries. 
+One would expect egg mass to be all NAs in mammals, since they're viviparous. It's surprising to see so many NAs in reptiles, though I could imagine that it would be difficult to find and weigh reptile eggs.
 
 **9. The `amphibio` data have variables that classify species as fossorial (burrowing), terrestrial, aquatic, or arboreal.Calculate the number of NA's in each of these variables. Do you think that the authors intend us to think that there are NA's in these columns or could they represent something else? Explain.**
 ```{r}
@@ -128,8 +128,8 @@ skim() %>%
 
 **10. Now that we know how NA's are represented in the `amniota` data, how would you load the data such that the values which represent NA's are automatically converted?**
 ```{r}
-amnio <- readr::read_csv("data/amniota.csv");
-   na_if(amnio, "-999")
+amnio <- readr::read_csv("data/amniota.csv", na = c("-999"))
+  
 ```
 
 ## Push your final code to GitHub!

@@ -1,7 +1,7 @@
 ---
 title: "Lab 7 Homework"
 author: "Jolane Abrams"
-date: "2023-02-04"
+date: "2023-02-06"
 output:
   html_document: 
     theme: spacelab
@@ -396,7 +396,7 @@ amnio_tidy %>%
 ## 2 Mammalia       4953
 ## 3 Reptilia       6040
 ```
-I'd expect egg mass to be all NAs in mammals, since they're viviparous, with bird eggs being easiest to find and weigh, followed by reptile eggs, which is reflected in these summaries. 
+One would expect egg mass to be all NAs in mammals, since they're viviparous. It's surprising to see so many NAs in reptiles, though I could imagine that it would be difficult to find and weigh reptile eggs.
 
 **9. The `amphibio` data have variables that classify species as fossorial (burrowing), terrestrial, aquatic, or arboreal.Calculate the number of NA's in each of these variables. Do you think that the authors intend us to think that there are NA's in these columns or could they represent something else? Explain.**
 
@@ -478,7 +478,14 @@ Table: Data summary
 **10. Now that we know how NA's are represented in the `amniota` data, how would you load the data such that the values which represent NA's are automatically converted?**
 
 ```r
-amnio <- readr::read_csv("data/amniota.csv");
+amnio <- readr::read_csv("data/amniota.csv", na = c("-999"))
+```
+
+```
+## Warning: One or more parsing issues, call `problems()` on your data frame for details,
+## e.g.:
+##   dat <- vroom(...)
+##   problems(dat)
 ```
 
 ```
@@ -486,37 +493,11 @@ amnio <- readr::read_csv("data/amniota.csv");
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: ","
 ## chr  (6): class, order, family, genus, species, common_name
-## dbl (30): subspecies, female_maturity_d, litter_or_clutch_size_n, litters_or...
+## dbl (28): female_maturity_d, litter_or_clutch_size_n, litters_or_clutches_pe...
+## lgl  (2): subspecies, female_body_mass_at_maturity_g
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-```
-
-```r
-   na_if(amnio, "-999")
-```
-
-```
-## # A tibble: 21,322 × 36
-##    class order      family genus species subsp…¹ commo…² femal…³ litte…⁴ litte…⁵
-##    <chr> <chr>      <chr>  <chr> <chr>     <dbl> <chr>     <dbl>   <dbl>   <dbl>
-##  1 Aves  Accipitri… Accip… Acci… albogu…      NA Pied G…     NA    NA         NA
-##  2 Aves  Accipitri… Accip… Acci… badius       NA Shikra     363.    3.25       1
-##  3 Aves  Accipitri… Accip… Acci… bicolor      NA Bicolo…     NA     2.7       NA
-##  4 Aves  Accipitri… Accip… Acci… brachy…      NA New Br…     NA    NA         NA
-##  5 Aves  Accipitri… Accip… Acci… brevip…      NA Levant…    363.    4          1
-##  6 Aves  Accipitri… Accip… Acci… castan…      NA Chestn…     NA    NA         NA
-##  7 Aves  Accipitri… Accip… Acci… chilen…      NA Chilea…     NA     2.7       NA
-##  8 Aves  Accipitri… Accip… Acci… chiono…      NA White-…    548.    4.25       1
-##  9 Aves  Accipitri… Accip… Acci… cirroc…      NA Collar…     NA     3.25      NA
-## 10 Aves  Accipitri… Accip… Acci… cooper…      NA Cooper…    730     4.35       1
-## # … with 21,312 more rows, 26 more variables: adult_body_mass_g <dbl>,
-## #   maximum_longevity_y <dbl>, gestation_d <dbl>, weaning_d <dbl>,
-## #   birth_or_hatching_weight_g <dbl>, weaning_weight_g <dbl>, egg_mass_g <dbl>,
-## #   incubation_d <dbl>, fledging_age_d <dbl>, longevity_y <dbl>,
-## #   male_maturity_d <dbl>, inter_litter_or_interbirth_interval_y <dbl>,
-## #   female_body_mass_g <dbl>, male_body_mass_g <dbl>, no_sex_body_mass_g <dbl>,
-## #   egg_width_mm <dbl>, egg_length_mm <dbl>, fledging_mass_g <dbl>, …
 ```
 
 ## Push your final code to GitHub!

@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jolane Abrams" />
 
-<meta name="date" content="2023-02-04" />
+<meta name="date" content="2023-02-06" />
 
 <title>Lab 7 Homework</title>
 
@@ -376,7 +376,7 @@ display: none;
 
 <h1 class="title toc-ignore">Lab 7 Homework</h1>
 <h4 class="author">Jolane Abrams</h4>
-<h4 class="date">2023-02-04</h4>
+<h4 class="date">2023-02-06</h4>
 
 </div>
 
@@ -695,9 +695,10 @@ How do these results affect your interpretation of NA’s?</strong></p>
 ## 1 Aves           4914
 ## 2 Mammalia       4953
 ## 3 Reptilia       6040</code></pre>
-<p>I’d expect egg mass to be all NAs in mammals, since they’re
-viviparous, with bird eggs being easiest to find and weigh, followed by
-reptile eggs, which is reflected in these summaries.</p>
+<p>One would expect egg mass to be all NAs in mammals, since they’re
+viviparous. It’s surprising to see so many NAs in reptiles, though I
+could imagine that it would be difficult to find and weigh reptile
+eggs.</p>
 <p><strong>9. The <code>amphibio</code> data have variables that
 classify species as fossorial (burrowing), terrestrial, aquatic, or
 arboreal.Calculate the number of NA’s in each of these variables. Do you
@@ -1248,36 +1249,20 @@ skim() %&gt;%
 <p><strong>10. Now that we know how NA’s are represented in the
 <code>amniota</code> data, how would you load the data such that the
 values which represent NA’s are automatically converted?</strong></p>
-<pre class="r"><code>amnio &lt;- readr::read_csv(&quot;data/amniota.csv&quot;);</code></pre>
+<pre class="r"><code>amnio &lt;- readr::read_csv(&quot;data/amniota.csv&quot;, na = c(&quot;-999&quot;))</code></pre>
+<pre><code>## Warning: One or more parsing issues, call `problems()` on your data frame for details,
+## e.g.:
+##   dat &lt;- vroom(...)
+##   problems(dat)</code></pre>
 <pre><code>## Rows: 21322 Columns: 36
 ## ── Column specification ────────────────────────────────────────────────────────
 ## Delimiter: &quot;,&quot;
 ## chr  (6): class, order, family, genus, species, common_name
-## dbl (30): subspecies, female_maturity_d, litter_or_clutch_size_n, litters_or...
+## dbl (28): female_maturity_d, litter_or_clutch_size_n, litters_or_clutches_pe...
+## lgl  (2): subspecies, female_body_mass_at_maturity_g
 ## 
 ## ℹ Use `spec()` to retrieve the full column specification for this data.
 ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>   na_if(amnio, &quot;-999&quot;)</code></pre>
-<pre><code>## # A tibble: 21,322 × 36
-##    class order      family genus species subsp…¹ commo…² femal…³ litte…⁴ litte…⁵
-##    &lt;chr&gt; &lt;chr&gt;      &lt;chr&gt;  &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-##  1 Aves  Accipitri… Accip… Acci… albogu…      NA Pied G…     NA    NA         NA
-##  2 Aves  Accipitri… Accip… Acci… badius       NA Shikra     363.    3.25       1
-##  3 Aves  Accipitri… Accip… Acci… bicolor      NA Bicolo…     NA     2.7       NA
-##  4 Aves  Accipitri… Accip… Acci… brachy…      NA New Br…     NA    NA         NA
-##  5 Aves  Accipitri… Accip… Acci… brevip…      NA Levant…    363.    4          1
-##  6 Aves  Accipitri… Accip… Acci… castan…      NA Chestn…     NA    NA         NA
-##  7 Aves  Accipitri… Accip… Acci… chilen…      NA Chilea…     NA     2.7       NA
-##  8 Aves  Accipitri… Accip… Acci… chiono…      NA White-…    548.    4.25       1
-##  9 Aves  Accipitri… Accip… Acci… cirroc…      NA Collar…     NA     3.25      NA
-## 10 Aves  Accipitri… Accip… Acci… cooper…      NA Cooper…    730     4.35       1
-## # … with 21,312 more rows, 26 more variables: adult_body_mass_g &lt;dbl&gt;,
-## #   maximum_longevity_y &lt;dbl&gt;, gestation_d &lt;dbl&gt;, weaning_d &lt;dbl&gt;,
-## #   birth_or_hatching_weight_g &lt;dbl&gt;, weaning_weight_g &lt;dbl&gt;, egg_mass_g &lt;dbl&gt;,
-## #   incubation_d &lt;dbl&gt;, fledging_age_d &lt;dbl&gt;, longevity_y &lt;dbl&gt;,
-## #   male_maturity_d &lt;dbl&gt;, inter_litter_or_interbirth_interval_y &lt;dbl&gt;,
-## #   female_body_mass_g &lt;dbl&gt;, male_body_mass_g &lt;dbl&gt;, no_sex_body_mass_g &lt;dbl&gt;,
-## #   egg_width_mm &lt;dbl&gt;, egg_length_mm &lt;dbl&gt;, fledging_mass_g &lt;dbl&gt;, …</code></pre>
 </div>
 <div id="push-your-final-code-to-github" class="section level2">
 <h2>Push your final code to GitHub!</h2>
