@@ -1,13 +1,13 @@
-Based on 2022 paper, "" Does culture moderate relationships between rumination and symptoms of depression and PTSD? 
+#Based on 2022 paper, "" Does culture moderate relationships between rumination and symptoms of depression and PTSD? 
 
--overall rumination rates
- -difference by culture
-                income
-                age
-                religion 
-                gender
-                education
-                *trauma type (for PTSD)
+#Brooding/RRS rates & culture with: 
+
+#2 cultures: Euro-Australian & Malaysian (change 0,1 to strings)
+
+#JKA: income, age, trauma type for PTSD
+#Akshanth:      religion, gender, education(1-5; change to strings) 
+                        
+                
 
 
 ```{r}
@@ -20,7 +20,6 @@ library(ggplot2)
 library(ggthemes)
 library(RColorBrewer)
 library(paletteer)
-
 ```
 
 ```{r}
@@ -106,16 +105,16 @@ dep %>%
 
 ```{r}
 dep %>% 
-  mutate(education = as.factor(education)) %>% 
-  group_by(education) %>% 
-  summarize(avg_brood = as.factor(mean(brooding_total))) %>% 
-  ggplot(aes(x = education, y = avg_brood, fill = education))+
+  mutate(culture = as.factor(culture)) %>% 
+  group_by(culture) %>% 
+  summarize(avg_brood = (mean(brooding_total))) %>% 
+  ggplot(aes(x = culture, y = avg_brood, fill = culture))+
   geom_col(alpha=0.5)+
   scale_fill_manual(values=my_palette)+
   theme(plot.title = element_text(size = 12, face = "bold"),
         axis.title = element_text(size = 10),
         axis.text.x = element_text(size=10)) +
-  labs(title = "Brooding by Education",
+  labs(title = "Brooding by Culture",
        x = "Education",
        y = "Average Brooding")
 
