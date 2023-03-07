@@ -112,41 +112,98 @@ dep %>%
 ```
 
 ```{r}
-dep <- dep %>% 
-  mutate(age_cat = case_when(age < 21 ~ "Under_21",
-                             age >= 21 & age < 25 ~ "21-25",
-                             age >= 25 & age < 30 ~ "25-30",
-                             age >= 30 & age < 35 ~ "30-35",
-                             age >= 35 & age < 40 ~ "35-40",
-                             age >= 40 & age < 45 ~ "40-45",
-                             age >= 45 & age < 50 ~ "45-50",
-                             age >= 50 & age < 55 ~ "50-55",
-                             age >= 55 & age < 60 ~ "55-60",
-                             age >= 60 ~ "Over 60"))
+#dep <- dep %>% 
+#  mutate(age_cat = case_when(age < 21 ~ "Under_21",
+#                             age >= 21 & age < 25 ~ "21-25",
+#                             age >= 25 & age < 30 ~ "25-30",
+#                             age >= 30 & age < 35 ~ "30-35",
+#                             age >= 35 & age < 40 ~ "35-40",
+#                             age >= 40 & age < 45 ~ "40-45",
+#                             age >= 45 & age < 50 ~ "45-50",
+#                             age >= 50 & age < 55 ~ "50-55",
+#                             age >= 55 & age < 60 ~ "55-60",
+#                             age >= 60 ~ "Over 60"))
 ```
+
+
+```{r}
+dep <- dep %>% 
+  mutate(age_cat = case_when(age < 21 ~ "Under 21",
+                             age >= 21 & age < 25 ~ "21 - 25",
+                             age >= 25 & age < 30 ~ "25 - 30",
+                             age >= 30 & age < 35 ~ "30 - 35",
+                             age >= 35 & age < 40 ~ "35 - 40",
+                             age >= 40 & age < 45 ~ "40 - 45",
+                             age >= 45 & age < 50 ~ "45 - 50",
+                             age >= 50 & age < 55 ~ "50 - 55",
+                             age >= 55 & age < 60 ~ "55 - 60",
+                             age >= 60 ~ "Over 60"))
+
+```
+
+
+```{r}
+class(dep$age_cat)
+```
+
 
 ```{r}
 D <- dep %>%
-  na.omit() %>%
+#  na.omit() %>%
   group_by(culture, age_cat) %>%
   summarize(avg_brood = mean(brooding_total, na.rm = T), .groups ="keep") %>%
   select(culture, age_cat, avg_brood)
+  
+D$age_cat <- factor(D$age_cat, levels=c(
+    "Under 21",
+    "21 - 25",
+    "25 - 30",
+    "30 - 35",
+    "35 - 40",
+    "40 - 45",
+    "45 - 50",
+    "50 - 55",
+    "55 - 60",
+    "Over 60"))
+
+D
 ```
 
+reorder the column order by age, 
+and make them the same scale (0-14)
+
+
 ```{r}
+
+
 D %>% 
+  filter(!is.na(age_cat)) %>% 
   ggplot(aes(x = age_cat, y = avg_brood, fill = age_cat)) +
-geom_col(alpha = 0.5, color = "black")+
-  facet_grid(culture ~ ., scales = "free_y", space = "free", labeller = labeller(culture = c(`0` = "Euro-Australian", `1` = "Malaysian"))) +
-scale_x_discrete(limits=c("teens", "earlytwens", "latetwens", "earlythirs", "latethirs", "earlyfors", "latefors", "earlyfifs", "latefifs", "sixties"))+
+  geom_col(alpha = 0.5, color = "black")+
+  facet_grid(culture ~ .,
+             scales = "free_y", 
+             space = "free", 
+             labeller = labeller(culture = c(`0` = "Euro-Australian", `1` = "Malaysian"))) +
+  scale_x_discrete(limits=c(
+    "Under 21",
+    "21 - 25",
+    "25 - 30",
+    "30 - 35",
+    "35 - 40",
+    "40 - 45",
+    "45 - 50",
+    "50 - 55",
+    "55 - 60",
+    "Over 60"))+
+  ylim(0,15)+
   labs(title = "Brooding by Age Category and Culture",
-x = NULL,
-y = "Average Brooding Total",
-fill = "Age Category") +
-theme(plot.title = element_text(size = 12, face = "bold"),
-plot.subtitle = element_text(size = 10),
-axis.title = element_text(size = 10),
-axis.text.x = element_text(angle = 45, hjust = 1))
+      x = NULL,
+      y = "Average Brooding Total",
+      fill = "Age Category") +
+  theme(plot.title = element_text(size = 12, face = "bold"),
+  plot.subtitle = element_text(size = 10),
+  axis.title = element_text(size = 10),
+  axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
 
