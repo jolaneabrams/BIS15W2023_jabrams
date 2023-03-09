@@ -88,7 +88,7 @@ ptsd<-read_csv(here("jka_r_project", "rum_ptsd_jka.csv")) %>% clean_names
 glimpse (dep)
 ```
 
-````{r}
+```{r}
 dep$culture <- as.factor(dep$culture)
 class(dep$culture)
 ```
@@ -249,8 +249,21 @@ danx <- danx %>%
   filter(!is.na(anxiety_total) & 
          !is.na(avg_brood) & 
          !is.na(culture))
+danx
 
-danx <- danx[-35,]
+```
+
+```{r}
+#Hannahs Notes 
+
+# See the culprit that is breaking your ylim:
+danx %>% 
+  filter(avg_brood > 18)
+```
+
+```{r}
+# Shouldnt need this anymore
+#danx <- danx[-35,]
 
 ggplot(danx, aes(x = anxiety_total, y = avg_brood, fill = anxiety_total)) +
   geom_col(alpha = 0.5, color = "black") +
@@ -258,37 +271,40 @@ ggplot(danx, aes(x = anxiety_total, y = avg_brood, fill = anxiety_total)) +
              scales = "free_y", 
              space = "free", 
              labeller = labeller(culture = c(`0` = "Euro-Australian", `1` = "Malaysian")))+ 
-  scale_y_continuous(limits = c(0, 18))
-
-
-  #ylim(0,18) 
-  # labs(title = "Brooding by Anxiety Level and Culture",
-  #     x = "Total Anxiety Score",
-   #    y = "Average Brooding Score",
-    #   fill = "Total Anxiety Score") + 
-  #theme(plot.title = element_text(size = 12, face = "bold"),
-   #     plot.subtitle = element_text(size = 10),
-    #    axis.title = element_text(size = 10),
-     #   axis.text = element_text(size = 8))
+#Hannah Edit: change y limit to 21 instead of 18
+  scale_y_continuous(limits = c(0, 21))+
+  labs(title = "Brooding by Anxiety Level and Culture",
+       x = "Total Anxiety Score",
+       y = "Average Brooding Score",
+       fill = "Total Anxiety Score") + 
+  theme(plot.title = element_text(size = 12, face = "bold"),
+        plot.subtitle = element_text(size = 10),
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8))
 ```
 
 
+
+
 ```{r}
-danx <- danx %>% 
-  filter(!is.na(anxiety_total) & 
-         !is.na(avg_brood) & 
-         !is.na(culture))
+# Not sure you you still need this, didnt want to delet :) 
+#  - Hannah
 
-danx <- danx[-35,]
-
-ggplot(danx, aes(x = anxiety_total, y = avg_brood, fill = anxiety_total)) +
-  geom_col(alpha = 0.5, color = "black") +
-  facet_grid(culture ~ .,
-             scales = "free_y", 
-             space = "free", 
-             labeller = labeller(culture = c(`0` = "Euro-Australian", `1` = "Malaysian")))+ 
-  scale_y_continuous(limits = c(0, 18))
-
+# danx <- danx %>% 
+#   filter(!is.na(anxiety_total) & 
+#          !is.na(avg_brood) & 
+#          !is.na(culture))
+# 
+# danx <- danx[-35,]
+# 
+# ggplot(danx, aes(x = anxiety_total, y = avg_brood, fill = anxiety_total)) +
+#   geom_col(alpha = 0.5, color = "black") +
+#   facet_grid(culture ~ .,
+#              scales = "free_y", 
+#              space = "free", 
+#              labeller = labeller(culture = c(`0` = "Euro-Australian", `1` = "Malaysian")))+ 
+#   scale_y_continuous(limits = c(0, 18))
+# 
 ```
 
 ```{r}
