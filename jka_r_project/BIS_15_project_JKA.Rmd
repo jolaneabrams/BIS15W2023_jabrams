@@ -69,6 +69,7 @@ library(ggplot2)
 library(ggthemes)
 library(RColorBrewer)
 library(paletteer)
+library(tidyr)
 ```
 
 ```{r}
@@ -110,25 +111,9 @@ dep %>%
             avg_age = mean(age,na.rm =T),
             total = n())
 ```
-
-```{r}
-#dep <- dep %>% 
-#  mutate(age_cat = case_when(age < 21 ~ "Under_21",
-#                             age >= 21 & age < 25 ~ "21-25",
-#                             age >= 25 & age < 30 ~ "25-30",
-#                             age >= 30 & age < 35 ~ "30-35",
-#                             age >= 35 & age < 40 ~ "35-40",
-#                             age >= 40 & age < 45 ~ "40-45",
-#                             age >= 45 & age < 50 ~ "45-50",
-#                             age >= 50 & age < 55 ~ "50-55",
-#                             age >= 55 & age < 60 ~ "55-60",
-#                             age >= 60 ~ "Over 60"))
-```
-
-
 ```{r}
 dep <- dep %>% 
-  mutate(age_cat = case_when(age < 21 ~ "Under 21",
+  mutate(age_cat = case_when(age < 21 ~ "18 - 21",
                              age >= 21 & age < 25 ~ "21 - 25",
                              age >= 25 & age < 30 ~ "25 - 30",
                              age >= 30 & age < 35 ~ "30 - 35",
@@ -148,14 +133,14 @@ class(dep$age_cat)
 
 
 ```{r}
-D <- dep %>%
+dpage <- dep %>%
 #  na.omit() %>%
   group_by(culture, age_cat) %>%
   summarize(avg_brood = mean(brooding_total, na.rm = T), .groups ="keep") %>%
   select(culture, age_cat, avg_brood)
   
-D$age_cat <- factor(D$age_cat, levels=c(
-    "Under 21",
+dpage$age_cat <- factor(dpage$age_cat, levels=c(
+    "18 - 21",
     "21 - 25",
     "25 - 30",
     "30 - 35",
@@ -166,7 +151,7 @@ D$age_cat <- factor(D$age_cat, levels=c(
     "55 - 60",
     "Over 60"))
 
-D
+dpage
 ```
 
 reorder the column order by age, 
@@ -174,9 +159,7 @@ and make them the same scale (0-14)
 
 
 ```{r}
-
-
-D %>% 
+dpage %>% 
   filter(!is.na(age_cat)) %>% 
   ggplot(aes(x = age_cat, y = avg_brood, fill = age_cat)) +
   geom_col(alpha = 0.5, color = "black")+
@@ -185,7 +168,7 @@ D %>%
              space = "free", 
              labeller = labeller(culture = c(`0` = "Euro-Australian", `1` = "Malaysian"))) +
   scale_x_discrete(limits=c(
-    "Under 21",
+    "18 - 21",
     "21 - 25",
     "25 - 30",
     "30 - 35",
@@ -195,10 +178,10 @@ D %>%
     "50 - 55",
     "55 - 60",
     "Over 60"))+
-  ylim(0,15)+
+  ylim(0,14)+
   labs(title = "Brooding by Age Category and Culture",
       x = NULL,
-      y = "Average Brooding Total",
+      y = "Average Brooding Score",
       fill = "Age Category") +
   theme(plot.title = element_text(size = 12, face = "bold"),
   plot.subtitle = element_text(size = 10),
@@ -209,131 +192,148 @@ D %>%
 
 
 ```{r}
-dep %>%
-na.omit() %>%
-group_by(age_cat, culture) %>%
-  summarize(avg_brood = mean(brooding_total, na.rm = T)) %>%
-ggplot(aes(x = age_cat, y = avg_brood, fill = age_cat)) +
-geom_col(position = "dodge", alpha = 0.5, color = "black") +
- +
-facet_grid(culture ~ ., scales = "free_y", space = "free", labeller = labeller(culture = c(`0` = "Euro-Australian", `1` = "Malaysian"))) +
-scale_y_continuous(limits = c(0, 14), breaks = seq(0, 14, by = 2.5)) +
-labs(title = "Brooding by Age Category and Culture",
-x = NULL,
-y = "Average Brooding Total",
-fill = "Age Category") +
-theme(plot.title = element_text(size = 12, face = "bold"),
-plot.subtitle = element_text(size = 10),
-axis.title = element_text(size = 10),
-axis.text.x = element_text(angle = 45, hjust = 1))
+dp2 <- dep %>%
+group_by(culture, depression_total) %>%
+  summarize(avg_brood = mean(brooding_total, na.rm = T), .groups ="keep") %>%
+  select(culture, depression_total, avg_brood)
+  
+dp2$depression_total <- factor(dp2$depression_total)
 ```
 
 ```{r}
-
+dp2 %>% 
+  filter(!is.na(depression_total)) %>% 
+  ggplot(aes(x = depression_total, y = avg_brood, fill = depression_total)) +
+  geom_col(alpha = 0.5, color = "black")+
+  facet_grid(culture ~ .,
+             scales = "free_y", 
+             space = "free", 
+             labeller = labeller(culture = c(`0` = "Euro-Australian", `1` = "Malaysian"))) 
 ```
 
 
 ```{r}
-```
-
-
-```{r}
-dep %>% 
-  na.omit() %>% 
-  group_by(culture, depression_total) %>% 
-  summarize(avg_brood = mean(brooding_total, na.rm = T)) %>% 
-  ggplot(aes(x = depression_total, y = avg_brood, fill = factor(culture))) +
-  geom_col(position = "dodge", alpha = 0.6) +
-  scale_fill_manual(values = my_palette, labels = c("Euro-Australian", "Malaysian")) +
-  labs(title = "Brooding by Depression Level and Culture",
-       x = "Depression Level",
-       y = "Brooding Total",
-       fill = "Culture") + 
+dp2 %>% 
+  filter(!is.na(depression_total)) %>% 
+  ggplot(aes(x = depression_total, y = avg_brood, fill = depression_total)) +
+  geom_col(alpha = 0.5, color = "black")+
+  facet_grid(culture ~ .,
+             scales = "free_y", 
+             space = "free", 
+             labeller = labeller(culture = c(`0` = "Euro-Australian", `1` = "Malaysian")))+ 
+  ylim(0,18)+
+labs(title = "Brooding by Depression Level and Culture",
+       x = "Total Depression Score",
+       y = "Average Brooding Score",
+       fill = "Total Depression Score") + 
   theme(plot.title = element_text(size = 12, face = "bold"),
         plot.subtitle = element_text(size = 10),
         axis.title = element_text(size = 10),
         axis.text = element_text(size = 8))
-
-
 ```
 
 
 ```{r}
-dep %>% 
-  na.omit() %>% 
+danx <- dep %>% 
   group_by(culture, anxiety_total) %>% 
-  summarize(avg_brood = mean(brooding_total, na.rm = T)) %>% 
-  ggplot(aes(x = anxiety_total, y = avg_brood, fill = factor(culture))) +
-  geom_col(position = "dodge", alpha = 0.6) +
-  scale_fill_manual(values = my_palette, labels = c("Euro-Australian", "Malaysian")) +
-  labs(title = "Brooding by Anxiety Level and Culture",
-       x = "Anxiety Level",
-       y = "Brooding Total",
-       fill = "Culture") + 
-  theme(plot.title = element_text(size = 12, face = "bold"),
-        plot.subtitle = element_text(size = 10),
-        axis.title = element_text(size = 10),
-        axis.text = element_text(size = 8))
+  summarize(avg_brood = mean(brooding_total, na.rm = T), .groups ="keep")
+  
+
+danx$anxiety_total <- factor(danx$anxiety_total)
 
 
 ```
 
 ```{r}
+danx <- danx %>% 
+  filter(!is.na(anxiety_total) & 
+         !is.na(avg_brood) & 
+         !is.na(culture))
+
+danx <- danx[-35,]
+
+ggplot(danx, aes(x = anxiety_total, y = avg_brood, fill = anxiety_total)) +
+  geom_col(alpha = 0.5, color = "black") +
+  facet_grid(culture ~ .,
+             scales = "free_y", 
+             space = "free", 
+             labeller = labeller(culture = c(`0` = "Euro-Australian", `1` = "Malaysian")))+ 
+  scale_y_continuous(limits = c(0, 18))
 
 
-
-
+  #ylim(0,18) 
+  # labs(title = "Brooding by Anxiety Level and Culture",
+  #     x = "Total Anxiety Score",
+   #    y = "Average Brooding Score",
+    #   fill = "Total Anxiety Score") + 
+  #theme(plot.title = element_text(size = 12, face = "bold"),
+   #     plot.subtitle = element_text(size = 10),
+    #    axis.title = element_text(size = 10),
+     #   axis.text = element_text(size = 8))
 ```
-
 
 
 ```{r}
+danx <- danx %>% 
+  filter(!is.na(anxiety_total) & 
+         !is.na(avg_brood) & 
+         !is.na(culture))
+
+danx <- danx[-35,]
+
+ggplot(danx, aes(x = anxiety_total, y = avg_brood, fill = anxiety_total)) +
+  geom_col(alpha = 0.5, color = "black") +
+  facet_grid(culture ~ .,
+             scales = "free_y", 
+             space = "free", 
+             labeller = labeller(culture = c(`0` = "Euro-Australian", `1` = "Malaysian")))+ 
+  scale_y_continuous(limits = c(0, 18))
 
 ```
 
 ```{r}
-
-
 ```
-
-
-```{r}
-dep %>% 
-  group_by(culture) %>% 
-  na.omit() %>% 
-  summarize(avg_brood = mean(brooding_total), avg_dep = mean(depression_total), avg_anx = mean(anxiety_total)) %>% 
-  ggplot(aes(x = avg_dep , y = avg_brood, fill = culture))+
-  geom_col(alpha=0.5)+
-  scale_fill_manual(values=my_palette)+
-  theme(plot.title = element_text(size = 12, face = "bold"),
-        axis.title = element_text(size = 10),
-        axis.text.x = element_text(size=10)) +
-  labs(title = "Brooding by Culture",
-       x = "Culture",
-       y = "Average Brooding",
-       fill = "Culture")
-
-```
-
-```{r}
-levels(dep$age_cat)
-
-```
-
 
 ```{r}
 glimpse(ptsd)
 ```
+```{r}
+ptsd <- ptsd %>%
+  mutate(rrs = rrs1 + rrs2 + rrs3 + rrs4 + rrs5 + rrs6 + rrs7 + rrs8 + rrs9 + rrs10) %>% 
+  filter(traumacoding == 0 - 6)
+ptsd$rrs <- factor(ptsd$rrs)
+
+class(ptsd$rrs)
 
 
+```
 
 
 ```{r}
-glimpse(ptsd)
+ptsd$rrs <- factor(ptsd$rrs)
+ptsd$group <- factor(ptsd$group)
+ptsd$had_sdep <- factor(ptsd$had_sdep)
+ptsd$had_sanx <- factor(ptsd$had_sanx)
+ptsd$had_stotal <- factor(ptsd$had_stotal)
+ptsd$pts_dtotal  <- factor(ptsd$pts_dtotal)
+ptsd$traumacoding  <- factor(ptsd$traumacoding)
+class(rrs, group)
+
 ```
 
 ```{r}
 names(ptsd)
 ```
-
+```{r}
+ptsd %>%
+group_by(group, had_sdep, rrs) %>%
+  summarize(avg_brood = mean(rrs, na.rm = T), .groups ="keep") %>%
+  #select(group, had_sdep, rrs)
+  ggplot(aes(x = had_sdep, y = rrs, fill = had_sdep)) +
+  geom_col(alpha = 0.5, color = "black")
+#facet_grid(group ~ .,
+             #scales = "free_y", 
+             #space = "free", 
+             #labeller = labeller(culture = c(`0` = "Euro-Australian", `1` = "Malaysian"))) 
+```
 
