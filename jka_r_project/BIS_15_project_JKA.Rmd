@@ -77,11 +77,11 @@ my_palette <- paletteer::paletteer_d(("ggprism::colors"))
 ```
 
 ```{r}
-dep<-read_csv(here("jka_r_project", "rum_depress_jka.csv")) %>% clean_names
+dep<-read_csv("/Users/jkabrams/Desktop/BIS15W2023_jabrams-main/jka_r_project/rum_depress_jka.csv") %>% clean_names
 ```
 
 ```{r}
-ptsd<-read_csv(here("jka_r_project", "rum_ptsd_jka.csv")) %>% clean_names
+ptsd<-read_csv("/Users/jkabrams/Desktop/BIS15W2023_jabrams-main/jka_r_project/rum_ptsd_jka.csv") %>% clean_names
 ```
 
 ```{r}
@@ -279,14 +279,12 @@ ggplot(danx, aes(x = anxiety_total, y = avg_brood, fill = anxiety_total)) +
 ```{r}
 glimpse(ptsd)
 ```
+
 ```{r}
 ptsd_t1 <- ptsd %>% 
   filter(between(as.numeric(as.character(traumacoding)), 1, 6))
-
-
-  ptsd_t1 %>% 
+ptsd_t1 %>% 
     select(traumacoding)
-
 ```
 
 ```{r}
@@ -300,9 +298,23 @@ ptsd_t1 %>%
   select(traumacoding, index_t)
 ```
 
+```{r}
 
+```
 
 ```{r}
+ptsd_dep <- ptsd %>% 
+  rowwise() %>% 
+  mutate(sum_rrs=sum(c_across(starts_with("rrs")), na.rm = T))  
+  
+```
+
+```{r}
+ptsd_dep
+```
+```{r}
+ptsd_dep$sum_rrs <- factor(ptsd_dep$sum_rrs)
+ptsd_dep$group <- factor(ptsd_dep$group)
 ptsd$rrs <- factor(ptsd$rrs)
 ptsd$group <- factor(ptsd$group)
 ptsd$had_sdep <- factor(ptsd$had_sdep)
@@ -310,6 +322,38 @@ ptsd$had_sanx <- factor(ptsd$had_sanx)
 ptsd$had_stotal <- factor(ptsd$had_stotal)
 ptsd$pts_dtotal  <- factor(ptsd$pts_dtotal)
 ptsd$traumacoding  <- factor(ptsd$traumacoding)
+ptsd_dep$had_stotal <- factor(ptsd_dep$had_stotal)
+ptsd_dep$pts_dtotal  <- factor(ptsd_dep$pts_dtotal)
+ptsd_dep$traumacoding  <- factor(ptsd_dep$traumacoding)
+```
+
+```{r}
+class(ptsd_dep$had_sdep)
+```
+
+
+```{r}
+ptsd_dep %>% 
+  summarise(had_sdep = had_sdep, avg_brood = mean(sum_rrs, na.rm=T), group = group, na.rm = T) %>% 
+  ggplot(aes(x = had_sdep, y = avg_brood, fill = had_sdep)) +
+  geom_col(alpha = 0.5, color = "black") +
+  facet_grid(group ~ .,
+             scales = "free_y", 
+             space = "free", 
+             labeller = labeller(culture = c(`1` = "Euro-Australian", `2` = "Malaysian")))+ 
+  labs(title = "Brooding by Depression Level and Culture, PTSD",
+  x = "Total Depression Score",
+  y = "Average Brooding Score",
+  fill = "Total Depression Score") + 
+  theme(plot.title = element_text(size = 12, face = "bold"),
+    plot.subtitle = element_text(size = 10),
+    axis.title = element_text(size = 10),
+    axis.text = element_text(size = 8))
+```
+
+
+```{r}
+
 class(rrs, group)
 
 ```
@@ -317,6 +361,7 @@ class(rrs, group)
 ```{r}
 names(ptsd)
 ```
+
 ```{r}
 ptsd %>%
 group_by(group, had_sdep, rrs) %>%
