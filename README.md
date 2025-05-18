@@ -1,4 +1,3 @@
 # BIS15W2023_jabrams
 I'm Jolane. 
-Mariculture may be the wave of the future, but recombinant DNA technology is the splice of life. 
-Email: jkabrams@ucdavis.edu
+This is the classwork for Data Science with R at UC Davis in Winter 2023.
